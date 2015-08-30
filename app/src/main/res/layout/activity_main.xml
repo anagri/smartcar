@@ -88,12 +88,12 @@
 
             <TextView
                 style="@style/dashboard_title"
-                android:text="Engine\nTemperature" />
+                android:text="Engine\nLoad" />
 
             <TextView
                 android:id="@+id/textEngineTemp"
                 style="@style/dashboard_title"
-                android:text="0 C"
+                android:text="0 %"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
 
