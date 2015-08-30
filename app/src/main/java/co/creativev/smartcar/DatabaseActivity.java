@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -32,6 +34,7 @@ public class DatabaseActivity extends AppCompatActivity implements DialogInterfa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_database);
         input = (EditText) findViewById(R.id.textRawInput);
         textOutput = (TextView) findViewById(R.id.textRawOutput);
@@ -61,6 +64,7 @@ public class DatabaseActivity extends AppCompatActivity implements DialogInterfa
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_singlechoice,
                 deviceStrs.toArray(new String[deviceStrs.size()]));
         alertDialog.setSingleChoiceItems(adapter, -1, this);
+        alertDialog.show();
     }
 
     @Override
@@ -88,6 +92,7 @@ public class DatabaseActivity extends AppCompatActivity implements DialogInterfa
 
     public void submit(View v) {
         String command = input.getText().toString();
+        textOutput.setText("Processing...");
         new AsyncTask<String, Integer, String>() {
 
             @Override
@@ -109,7 +114,7 @@ public class DatabaseActivity extends AppCompatActivity implements DialogInterfa
                     Toast.makeText(DatabaseActivity.this, s, Toast.LENGTH_SHORT).show();
                     textOutput.setText(s);
                 } else {
-                    textOutput.setText("Error");
+                    textOutput.setText(s);
                 }
             }
         }.execute(command);
@@ -193,6 +198,13 @@ public class DatabaseActivity extends AppCompatActivity implements DialogInterfa
         BluetoothDevice device = btAdapter.getRemoteDevice(deviceAddress);
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");//AA:BB:CC:11:22:33");
         try {
+            if(socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    Log.e("APPLOG", "Bluetooth close connection exception", e);
+                }
+            }
             socket = device.createInsecureRfcommSocketToServiceRecord(uuid);
             socket.connect();
         } catch (IOException e) {
